@@ -4,7 +4,7 @@
 #include <stdbool.h>
 
 #define MAX_COMMENT_SIZE 1000
-#define MAX_VARS 100
+#define MAX_IP 100
 
 typedef struct node
 {
@@ -12,57 +12,62 @@ typedef struct node
     bool value;
     struct node *left;
     struct node *right;
+    struct node *prev;
 } node;
 
 typedef struct tree
 {
     int var_amount;
-    bool res;
     node *root;
+    int interp[MAX_IP];
 } tree;
 
-bool satisfies(int formula[][], tree *partial_interp)
+node *create_node(bool value, node *curr)
 {
-//
+    node *new_node = (node*) malloc(sizeof(node));
+    new_node->left = NULL;
+    new_node->right = NULL;
+    new_node->prev = curr;
+    new_node->value = value;
+
+    return new_node;
 }
 
-bool contradicts(int formula[][], tree *partial_interp)
+node *add_node(tree *partial_interp, node *curr, bool value)
 {
-// 
+    node *new_node = create_node(value, curr);
+
+    // Falta Coisa
 }
 
-int choose_var(tree *partial_interp)
-{
-//
-}
+bool sat(int cla, int lit, int formula[cla][lit], tree *partial_interp, node *curr)
+{ 
+    if(satisfies(cla, lit, formula, curr)) return true;
+    if(contradicts(cla, lit, formula, curr)) return false;
+    
+    curr = add_node(partial_interp, curr, true);
+    if(sat(cla, lit, formula, partial_interp, curr)) return true;
 
-node  *add_node(tree *partial_interp, bool value)
-{
-//
-}
-
-bool *sat(int formula[][], tree *partial_interp)
-{
-    if(satisfies(formula, partial_interp)) return true;
-    if(contradicts(formula, partial_interp)) return false;
-
-    int var = choose_var(partial_interp);
-    if(var == -1) return false;
-
-    node *new_node = add_node(partial_interp, true);
-    if(sat(formula, partial_interp)) return true;
-
-    new_node = add_node(partial_interp, false);
-    if(sat(formula, partial_interp)) return false;
-
+    curr = add_node(partial_interp, curr, false);
+    if(sat(cla, lit, formula, partial_interp, curr)) return false;
+    
     return false;
 }
 
 tree *initialize_tree(int var_amount)
 {
     tree *new_tree = (tree*) malloc(sizeof(tree));
+    new_tree->root = (node*) malloc(sizeof(node));
+
     new_tree->var_amount = var_amount;
-    new_tree->root = NULL;
+    new_tree->root->left = NULL;
+    new_tree->root->right = NULL;
+    new_tree->root->prev = NULL;
+    new_tree->root->value = false;
+    new_tree->root->var = 0;
+
+    memset(new_tree->interp, 0, sizeof(new_tree->interp));
+
     return new_tree;
 }   
 
@@ -120,7 +125,7 @@ int main()
 
             if(aux < 0) 
             {
-                if (formula[i][aux-1] == 1) 
+                if (formula[i][-aux-1] == 1) 
                 {
                     tautology = 1;
                 }
@@ -147,7 +152,7 @@ int main()
 
     tree *partial_interpretation = initialize_tree(lit);
     
-    sat(formula, partial_interpretation);
+    sat(cla, lit, formula, partial_interpretation, NULL);
 
     return 0;
 }
