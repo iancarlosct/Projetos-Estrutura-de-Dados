@@ -87,41 +87,6 @@ bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
     return false;
 }
 
-/*
-bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
-{
-    for(int i = 0; i < cla; i++)
-    {
-        bool clause_satisfied = false;
-        bool all_false = true;
-        
-        for(int j = 0; j < lit; j++)
-        {
-            if(formula[i][j] != 0)
-            {
-                if(interp[j] == 0)
-                {
-                    all_false = false; // Tem literal indefinido
-                    break;
-                }
-                else if(formula[i][j] == interp[j])
-                {
-                    clause_satisfied = true; // Cláusula satisfeita
-                    break;
-                }
-            }
-        }
-        
-        // Se todos literais definidos e nenhum satisfez a cláusula
-        if(!clause_satisfied && all_false)
-        {
-            return true;
-        }
-    }
-    return false;
-}
-*/
-
 bool sat(int cla, int lit, int formula[cla][lit], tree *header, node *curr)
 { 
     if(satisfies(cla, lit, formula, header->interp)) return true;
