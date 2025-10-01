@@ -57,19 +57,21 @@ bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
     int aux = 0;
     for(int i = 0; i < cla; i++)
     {
+        bool satisfied = false;
         for(int j = 0; j < lit; j++)
         {
             if(formula[i][j] == 2)
             {
-                aux++;
+                satisfied = true;
                 break;
             }
             if(formula[i][j] == interp[j] && interp[j] != 0) 
             {
-                aux++;
+                satisfied = true;
                 break;
             }
         }
+        if(satisfied) aux++;
     }
 
     if(aux == cla) return true;
@@ -206,7 +208,8 @@ int main()
         }
     }
 
-    // Print da matriz
+    // Print da matriz na memória
+    printf("Fórmula na Memória:\n");
     for(int i = 0; i < cla; i++)
     {
         for(int j = 0; j < lit; j++)
@@ -215,6 +218,7 @@ int main()
         }
         printf("\n");
     }
+    printf("\n");
 
     tree *header = initialize_tree(lit);
     
@@ -225,8 +229,10 @@ int main()
         printf("Satisfatível\n");
         for(int i = 0; i < MAX_IP; i++)
         {
-            if(header->interp[i] == 0) break;
-            printf("X%d: %d ", i+1, header->interp[i]);
+            if(header->interp[i] != 0)
+            {
+                printf("X%d: %d ", i+1, header->interp[i]);
+            }
         }
         printf("\n");
     } 
