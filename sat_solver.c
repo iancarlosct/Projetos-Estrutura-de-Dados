@@ -27,7 +27,6 @@ node *create_node(bool value)
     new_node->left = NULL;
     new_node->right = NULL;
     new_node->value = value;
-
     return new_node;
 }
 
@@ -41,12 +40,12 @@ node *add_node(tree *header, node *curr, bool value)
 
     if(curr == NULL)
     {
-        if(value == true) header->root->left = new_node;           
+        if(header->root->left) header->root->left = new_node;           
         else header->root->right = new_node;
     }
     else
     {
-        if(value == true) curr->left = new_node;
+        if(value) curr->left = new_node;
         else curr->right = new_node;
     }
 
@@ -56,11 +55,15 @@ node *add_node(tree *header, node *curr, bool value)
 bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
 {
     int aux = 0;
-
     for(int i = 0; i < cla; i++)
     {
         for(int j = 0; j < lit; j++)
         {
+            if(formula[i][j] == 2)
+            {
+                aux++;
+                break;
+            }
             if(formula[i][j] == interp[j] && interp[j] != 0) 
             {
                 aux++;
@@ -77,12 +80,26 @@ bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
 {
     for(int i = 0; i < cla; i++)
     {
+        bool contradiction = true;
         for(int j = 0; j < lit; j++)
         {
-            if(formula[i][j] != 0 && interp[j] == 0) break;
-            else if(formula[i][j] == interp[j] && interp[j] != 0) break;
-            if(j == lit-1) return true;
+            if(formula[i][j] == 2) 
+            {
+                contradiction = false;
+                break;
+            }
+            if(formula[i][j] != 0 && interp[j] == 0) 
+            {
+                contradiction = false;
+                break;
+            }
+            if(formula[i][j] == interp[j] && interp[j] != 0) 
+            {
+                contradiction = false;
+                break;
+            }
         }
+        if(contradiction) return true;
     }
     return false;
 }
@@ -92,17 +109,17 @@ bool sat(int cla, int lit, int formula[cla][lit], tree *header, node *curr)
     if(satisfies(cla, lit, formula, header->interp)) return true;
     if(contradicts(cla, lit, formula, header->interp)) return false;
 
+    if(header->var_used >= lit) return false;
+
     node *node_t = add_node(header, curr, true);
     if(sat(cla, lit, formula, header, node_t)) return true;
+
+    header->var_used--;
     
     node *node_f = add_node(header, curr, false);
     if(sat(cla, lit, formula, header, node_f)) return true;
 
     header->var_used--;
-    if(header->var_used >= 0 && header->var_used < MAX_IP)
-    {
-        header->interp[header->var_used] = 0;
-    }
     
     return false;
 }
@@ -114,10 +131,6 @@ tree *initialize_tree(int var_amount)
 
     new_tree->var_amount = var_amount;
     new_tree->var_used = 0;
-    new_tree->root->left = NULL;
-    new_tree->root->right = NULL;
-    new_tree->root->value = false;
-
     memset(new_tree->interp, 0, sizeof(new_tree->interp));
 
     return new_tree;
@@ -189,6 +202,7 @@ int main()
         if(tautology)
         {
             memset(formula[i], 0, lit * sizeof(int));
+            formula[i][0] = 2;
         }
     }
 
@@ -202,19 +216,24 @@ int main()
         printf("\n");
     }
 
-    tree *headerretation = initialize_tree(lit);
+    tree *header = initialize_tree(lit);
     
-    bool res = sat(cla, lit, formula, headerretation, NULL);
+    bool res = sat(cla, lit, formula, header, NULL);
 
     if(res) 
     {
         printf("Satisfatível\n");
+        for(int i = 0; i < MAX_IP; i++)
+        {
+            if(header->interp[i] == 0) break;
+            printf("X%d: %d ", i+1, header->interp[i]);
+        }
+        printf("\n");
     } 
     else
     {
         printf("Contradição\n");
     }
-
 
     return 0;
 }
