@@ -8,48 +8,136 @@
 
 typedef struct node
 {
-    int var;
     bool value;
     struct node *left;
     struct node *right;
-    struct node *prev;
 } node;
 
 typedef struct tree
 {
     int var_amount;
+    int var_used;
     node *root;
     int interp[MAX_IP];
 } tree;
 
-node *create_node(bool value, node *curr)
+node *create_node(bool value)
 {
     node *new_node = (node*) malloc(sizeof(node));
     new_node->left = NULL;
     new_node->right = NULL;
-    new_node->prev = curr;
     new_node->value = value;
 
     return new_node;
 }
 
-node *add_node(tree *partial_interp, node *curr, bool value)
+node *add_node(tree *header, node *curr, bool value)
 {
-    node *new_node = create_node(value, curr);
+    node *new_node = create_node(value);
 
-    // Falta Coisa
+    if(value == true) header->interp[header->var_used] = 1;
+    else header->interp[header->var_used] = -1;
+    header->var_used++;
+
+    if(curr == NULL)
+    {
+        if(value == true) header->root->left = new_node;           
+        else header->root->right = new_node;
+    }
+    else
+    {
+        if(value == true) curr->left = new_node;
+        else curr->right = new_node;
+    }
+
+    return new_node;
 }
 
-bool sat(int cla, int lit, int formula[cla][lit], tree *partial_interp, node *curr)
-{ 
-    if(satisfies(cla, lit, formula, curr)) return true;
-    if(contradicts(cla, lit, formula, curr)) return false;
-    
-    curr = add_node(partial_interp, curr, true);
-    if(sat(cla, lit, formula, partial_interp, curr)) return true;
+bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
+{
+    int aux = 0;
 
-    curr = add_node(partial_interp, curr, false);
-    if(sat(cla, lit, formula, partial_interp, curr)) return false;
+    for(int i = 0; i < cla; i++)
+    {
+        for(int j = 0; j < lit; j++)
+        {
+            if(formula[i][j] == interp[j] && interp[j] != 0) 
+            {
+                aux++;
+                break;
+            }
+        }
+    }
+
+    if(aux == cla) return true;
+    return false;
+}
+
+bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
+{
+    for(int i = 0; i < cla; i++)
+    {
+        for(int j = 0; j < lit; j++)
+        {
+            if(formula[i][j] != 0 && interp[j] == 0) break;
+            else if(formula[i][j] == interp[j] && interp[j] != 0) break;
+            if(j == lit-1) return true;
+        }
+    }
+    return false;
+}
+
+/*
+bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
+{
+    for(int i = 0; i < cla; i++)
+    {
+        bool clause_satisfied = false;
+        bool all_false = true;
+        
+        for(int j = 0; j < lit; j++)
+        {
+            if(formula[i][j] != 0)
+            {
+                if(interp[j] == 0)
+                {
+                    all_false = false; // Tem literal indefinido
+                    break;
+                }
+                else if(formula[i][j] == interp[j])
+                {
+                    clause_satisfied = true; // Cláusula satisfeita
+                    break;
+                }
+            }
+        }
+        
+        // Se todos literais definidos e nenhum satisfez a cláusula
+        if(!clause_satisfied && all_false)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+*/
+
+bool sat(int cla, int lit, int formula[cla][lit], tree *header, node *curr)
+{ 
+    if(satisfies(cla, lit, formula, header->interp)) return true;
+    if(contradicts(cla, lit, formula, header->interp)) return false;
+
+    node *node_t = add_node(header, curr, true);
+    if(sat(cla, lit, formula, header, node_t)) return true;
+    
+    node *node_f = add_node(header, curr, false);
+    if(sat(cla, lit, formula, header, node_f)) return true;
+
+    header->var_used--;
+    if(header->var_used >= 0 && header->var_used < MAX_IP)
+    {
+        header->interp[header->var_used] = 0;
+    }
     
     return false;
 }
@@ -60,11 +148,10 @@ tree *initialize_tree(int var_amount)
     new_tree->root = (node*) malloc(sizeof(node));
 
     new_tree->var_amount = var_amount;
+    new_tree->var_used = 0;
     new_tree->root->left = NULL;
     new_tree->root->right = NULL;
-    new_tree->root->prev = NULL;
     new_tree->root->value = false;
-    new_tree->root->var = 0;
 
     memset(new_tree->interp, 0, sizeof(new_tree->interp));
 
@@ -100,7 +187,7 @@ int main()
         }
     }
 
-    // Leitura da fórmula (com eliminação de tautologias)
+    // Leitura da fórmula (com eliminação de clausulas com tautologias)
     int formula[cla][lit];
     memset(formula, 0, sizeof(formula));
 
@@ -150,9 +237,19 @@ int main()
         printf("\n");
     }
 
-    tree *partial_interpretation = initialize_tree(lit);
+    tree *headerretation = initialize_tree(lit);
     
-    sat(cla, lit, formula, partial_interpretation, NULL);
+    bool res = sat(cla, lit, formula, headerretation, NULL);
+
+    if(res) 
+    {
+        printf("Satisfatível\n");
+    } 
+    else
+    {
+        printf("Contradição\n");
+    }
+
 
     return 0;
 }
