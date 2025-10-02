@@ -50,7 +50,8 @@ node *add_node(tree *header, node *curr, int var_index, bool value)
     // RETORNA -> NOVO NÓ
 
     node *new_node = create_node(var_index, value);
-    header->interp[var_index] = value;
+    if(value) header->interp[var_index] = 1;
+    else header->interp[var_index] = -1;
 
     if(curr == NULL)
     {
@@ -156,6 +157,8 @@ bool sat(int cla, int lit, int formula[cla][lit], tree *header, node *curr, int 
     node *node_f = add_node(header, curr, var_index, false);
     if(sat(cla, lit, formula, header, node_f, var_index+1)) return true;
     
+    header->interp[var_index] = 0;
+
     return false;
 }
 
