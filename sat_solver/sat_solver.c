@@ -219,6 +219,7 @@ int main()
             break;
         }
     }
+    printf("\n");
 
     
     int formula[cla][lit];                  // Matriz onde a fórmula é guardada
@@ -283,7 +284,7 @@ int main()
     // PRINT DO RESULTADO E DA INTERPRETAÇÃO PARCIAL EM CASO DE FÓRMULA SATISFATÍVEL
     if(res) 
     {
-        printf("Satisfatível\n");
+        printf("SATISFIABLE\n");
         for(int i = 0; i < MAX_IP; i++)
         {
             if(header->interp[i] != 0)
@@ -295,7 +296,7 @@ int main()
     } 
     else
     {
-        printf("Contradição\n");
+        printf("UNSATISFIABLE\n");
     }
 
     return 0;
