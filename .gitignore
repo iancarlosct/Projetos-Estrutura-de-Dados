@@ -4,3 +4,6 @@
 .vscode
 *.txt
 a.out
+*.o
+!Makefile
+build
