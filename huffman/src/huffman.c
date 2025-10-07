@@ -3,6 +3,51 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+huffman_node* create_united_node(huffman_node *first, huffman_node *second) {
+  // Create a new huffman node that unites two nodes
+  // @param first first node
+  // @param second second node
+  // @return new huffman node that unites the two nodes
+  huffman_node* united_node = (huffman_node*)malloc(sizeof(huffman_node));
+  united_node->value = NULL;
+  united_node->frequency = first->frequency + second->frequency;
+  united_node->left = united_node->right = united_node->next = NULL;
+  return united_node;
+}
+
+huffman_node* insert_huffman_node(huffman_node *head, huffman_node *new_node) {
+  // Insert a huffman node in the huffman linked list in the correct position
+  // @param head head of the huffman linked list
+  // @param new_node node to be inserted
+  // @return head of the huffman linked list
+  if (head == NULL || new_node->frequency < head->frequency) {
+    return new_node;
+  }
+  huffman_node *curr = head;
+  while (curr->next != NULL && curr->next->frequency <= new_node->frequency) {
+    curr = curr->next;
+  }
+  new_node->next = curr->next;
+  curr->next = new_node;
+  return head;
+}
+
+huffman_node* create_huffman_tree(huffman_node *head) {
+  // Create huffman tree from the huffman linked list
+  // @param head head of the huffman linked list
+  // @return root of the huffman tree
+  while (head != NULL && head->next != NULL) {
+    huffman_node *first = head;
+    huffman_node *second = head->next;
+    huffman_node *united_node = create_united_node(first, second);
+    united_node->left = first;
+    united_node->right = second;
+    head = second->next;
+    head = insert_huffman_node(head, united_node);
+  }
+  return head;
+}
+
 void print_freq(huffman_node *head) {
   huffman_node *curr = head;
   while (curr != NULL) {
@@ -34,5 +79,7 @@ int main() {
   destroy_hash(hash);
   destroy_buffer(buffer);
   print_freq(head);
+  huffman_node *huffman_tree_root = create_huffman_tree(head);
+  printf("%d\n", huffman_tree_root->frequency); 
   return 0;
 }
