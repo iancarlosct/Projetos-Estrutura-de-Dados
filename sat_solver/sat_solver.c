@@ -6,7 +6,8 @@
 #define MAX_COMMENT_SIZE 1000 // Maximum size of a comment line
 #define MAX_IP 100            // Maximum size of the interpretation partial list
 
-typedef struct node{
+typedef struct node
+{
     //Tree Node
     int var_index;      // Index of the variable in the interpretation partial list
     bool value;         // Boolean value assigned to the variable 
@@ -14,14 +15,16 @@ typedef struct node{
     struct node *right; // Pointer to the right child (false branch)
 } node;
 
-typedef struct tree{
+typedef struct tree
+{
     //Tree Header
     int var_amount;      // Amount of variables in the formula
     node *root;          // Pointer to the root node of the tree
     int interp[MAX_IP];  // List of the interpretation partial (1 = true, -1 = false, 0 = unassigned)
 } tree;
 
-node *create_node(int var_index, bool value){
+node *create_node(int var_index, bool value)
+{
     //Function -> Create a new node
     // @param var_index -> index of the variable in the interpretation partial list
     // @param value -> boolean value to be assigned to the variable
@@ -34,7 +37,8 @@ node *create_node(int var_index, bool value){
     return new_node;
 }
 
-node *add_node(tree *header, node *curr, int var_index, bool value){
+node *add_node(tree *header, node *curr, int var_index, bool value)
+{
     //Function -> Add a new node to the tree
     // @param header -> tree header
     // @param curr -> current node where the new node will be added as left or right
@@ -44,10 +48,14 @@ node *add_node(tree *header, node *curr, int var_index, bool value){
     node *new_node = create_node(var_index, value);
     if(value) header->interp[var_index] = 1;
     else header->interp[var_index] = -1;
-    if(curr == NULL){
+
+    if(curr == NULL)
+    {
         if(header->root->left == NULL) header->root->left = new_node;           
         else header->root->right = new_node;
-    } else{
+    } 
+    else
+    {
         if(value) curr->left = new_node;
         else curr->right = new_node;
     }
@@ -55,7 +63,8 @@ node *add_node(tree *header, node *curr, int var_index, bool value){
     return new_node;
 }
 
-bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP]) {
+bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP]) 
+{
     // Function -> Test if the formula with the current partial interpretation is true
     // @param cla -> number of clauses
     // @param lit -> number of variables (literals)
@@ -63,14 +72,18 @@ bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP]) {
     // @param interp -> list of the partial interpretation
     // @return -> TRUE if the formula is true with the IP (SATISFIABLE)
     // @return -> FALSE if the formula is inconclusive with the IP (INCONCLUSIVE != UNSATISFIABLE)
-    for(int i = 0; i < cla; i++) {
+    for(int i = 0; i < cla; i++) 
+    {
         bool satisfied = false;
-        for(int j = 0; j < lit; j++) {
-            if(formula[i][j] == 2) {
+        for(int j = 0; j < lit; j++) 
+        {
+            if(formula[i][j] == 2) 
+            {
                 satisfied = true;
                 break;
             }
-            if(formula[i][j] == interp[j] && interp[j] != 0) {
+            if(formula[i][j] == interp[j] && interp[j] != 0) 
+            {
                 satisfied = true;
                 break;
             }
@@ -89,18 +102,23 @@ bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
     // @param interp -> list of the partial interpretation
     // @return -> TRUE if the formula is false with the IP (CONTRADICTION)
     // @return -> FALSE if the formula is inconclusive with the IP (INCONCLUSIVE != SATISFIABLE)
-    for(int i = 0; i < cla; i++) {
+    for(int i = 0; i < cla; i++) 
+    {
         bool contradicted = true;
-        for(int j = 0; j < lit; j++) {
-            if(formula[i][j] == 2) {
+        for(int j = 0; j < lit; j++) 
+        {
+            if(formula[i][j] == 2) 
+            {
                 contradicted = false;
                 break;
             }
-            if(formula[i][j] != 0 && interp[j] == 0) {
+            if(formula[i][j] != 0 && interp[j] == 0) 
+            {
                 contradicted = false;
                 break;
             }
-            if(formula[i][j] == interp[j] && interp[j] != 0) {
+            if(formula[i][j] == interp[j] && interp[j] != 0) 
+            {
                 contradicted = false;
                 break;
             }
@@ -163,24 +181,30 @@ int main()
     
 
     // Reads the input until it finds the "p cnf" line
-    while(scanf(" %c", &cmd) != EOF) {
-        if(cmd == 'c') {
+    while(scanf(" %c", &cmd) != EOF) 
+    {
+        if(cmd == 'c') 
+        {
             fgets(comment, sizeof(comment), stdin);
             comment[strlen(comment)-1] = '\0';
             printf("=== %s ===\n", comment+1);
         }
-        if(cmd == 'p'){
+        if(cmd == 'p')
+        {
             scanf("%s", form);
-            if(strcmp(form, "cnf") != 0) {
+            if(strcmp(form, "cnf") != 0) 
+            {
                 printf("Invalid Format, Please Use CNF Format\n");
                 return 0;
             }
             scanf("%d %d", &lit, &cla);
-            if(lit <= 0) {
+            if(lit <= 0) 
+            {
                 printf("Literals Number Invalid, Please Use a Valid Amount\n");
                 return 0;
             }
-            if(cla <= 0){
+            if(cla <= 0)
+            {
                 printf("Clauses Number Invalid, Please Use a Valid Amount\n");
                 return 0;
             }
@@ -193,19 +217,24 @@ int main()
     memset(formula, 0, sizeof(formula));    // Initialize the matrix with 0 (no literal in the clause)
 
     // Reads the formula and fills the matrix
-    for(int i = 0; i < cla; i++) {
+    for(int i = 0; i < cla; i++) 
+    {
         int aux, tautology = 0;
-        while(1){
+        while(1)
+        {
             scanf("%d", &aux);
 
             if(aux == 0) break; // End of clause
-            if(aux > 0) {
-                if (formula[i][aux-1] == -1) {
+            if(aux > 0) 
+            {
+                if (formula[i][aux-1] == -1) 
+                {
                     tautology = 1;
                 }
                 formula[i][aux-1] = 1;
             } 
-            if(aux < 0) {
+            if(aux < 0) 
+            {
                 if (formula[i][-aux-1] == 1) 
                 {
                     tautology = 1;
@@ -213,6 +242,7 @@ int main()
                 formula[i][-aux-1] = -1;
             }
         }   
+
         // In case of tautology, the clause is set to a special value (2) to be ignored in satisfies() and contradicts()
         if(tautology) {
             memset(formula[i], 0, lit * sizeof(int)); // Clear the clause
@@ -222,8 +252,10 @@ int main()
 
     // Print the formula stored in memory
     printf("Fórmula na Memória:\n");
-    for(int i = 0; i < cla; i++) {
-        for(int j = 0; j < lit; j++){
+    for(int i = 0; i < cla; i++) 
+    {
+        for(int j = 0; j < lit; j++)
+        {
             printf("%d ", formula[i][j]);
         }
         printf("\n");
@@ -237,15 +269,20 @@ int main()
     bool res = sat(cla, lit, formula, header, header->root, 0);
 
     // Print the result
-    if(res) {
+    if(res) 
+    {
         printf("SATISFIABLE\n");
-        for(int i = 0; i < MAX_IP; i++){
-            if(header->interp[i] != 0){
+        for(int i = 0; i < MAX_IP; i++)
+        {
+            if(header->interp[i] != 0)
+            {
                 printf("X%d: %d ", i+1, header->interp[i]);
             }
         }
         printf("\n");
-    } else{
+    } 
+    else
+    {
         printf("UNSATISFIABLE\n");
     }
 
