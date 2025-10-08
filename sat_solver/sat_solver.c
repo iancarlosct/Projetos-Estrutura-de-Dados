@@ -23,12 +23,14 @@ typedef struct tree
     int interp[MAX_IP];  // List of the interpretation partial (1 = true, -1 = false, 0 = unassigned)
 } tree;
 
+/** 
+ * Function -> Create a new node
+ * @param var_index -> index of the variable in the interpretation partial list
+ * @param value -> boolean value to be assigned to the variable
+ *@return -> new node
+ */
 node *create_node(int var_index, bool value)
 {
-    //Function -> Create a new node
-    // @param var_index -> index of the variable in the interpretation partial list
-    // @param value -> boolean value to be assigned to the variable
-    // @return -> new node
     node *new_node = (node*) malloc(sizeof(node));
     new_node->var_index = var_index;
     new_node->value = value;
@@ -37,14 +39,16 @@ node *create_node(int var_index, bool value)
     return new_node;
 }
 
+/**
+ * Function -> Add a new node to the tree
+ * @param header -> tree header
+ * @param curr -> current node where the new node will be added as left or right
+ * @param var_index -> index of the variable in the interpretation partial list
+ * @param value -> boolean value to be assigned to the variable
+ * @return -> new node added to the tree
+ */
 node *add_node(tree *header, node *curr, int var_index, bool value)
 {
-    //Function -> Add a new node to the tree
-    // @param header -> tree header
-    // @param curr -> current node where the new node will be added as left or right
-    // @param var_index -> index of the variable in the interpretation partial list
-    // @param value -> boolean value to be assigned to the variable
-    // @return -> new node added to the tree
     node *new_node = create_node(var_index, value);
     if(value) header->interp[var_index] = 1;
     else header->interp[var_index] = -1;
@@ -63,15 +67,17 @@ node *add_node(tree *header, node *curr, int var_index, bool value)
     return new_node;
 }
 
+/**
+ * Function -> Test if the formula with the current partial interpretation is true
+ * @param cla -> number of clauses
+ * @param lit -> number of variables (literals)
+ * @param formula -> matrix where the formula is stored
+ * @param interp -> list of the partial interpretation
+ * @return -> TRUE if the formula is true with the IP (SATISFIABLE)
+ * @return -> FALSE if the formula is inconclusive with the IP (INCONCLUSIVE != UNSATISFIABLE)
+ */
 bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP]) 
 {
-    // Function -> Test if the formula with the current partial interpretation is true
-    // @param cla -> number of clauses
-    // @param lit -> number of variables (literals)
-    // @param formula -> matrix where the formula is stored
-    // @param interp -> list of the partial interpretation
-    // @return -> TRUE if the formula is true with the IP (SATISFIABLE)
-    // @return -> FALSE if the formula is inconclusive with the IP (INCONCLUSIVE != UNSATISFIABLE)
     for(int i = 0; i < cla; i++) 
     {
         bool satisfied = false;
@@ -93,15 +99,17 @@ bool satisfies(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
     return true;
 }
 
+/**
+ * Function -> Test if the formula with the current partial interpretation is false
+ * @param cla -> number of clauses
+ * @param lit -> number of variables (literals)
+ * @param formula -> matrix where the formula is stored
+ * @param interp -> list of the partial interpretation
+ * @return -> TRUE if the formula is false with the IP (CONTRADICTION)
+ * @return -> FALSE if the formula is inconclusive with the IP (INCONCLUSIVE != SATISFIABLE)
+*/
 bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
 {
-    // Function -> Test if the formula with the current partial interpretation is false
-    // @param cla -> number of clauses
-    // @param lit -> number of variables (literals)
-    // @param formula -> matrix where the formula is stored
-    // @param interp -> list of the partial interpretation
-    // @return -> TRUE if the formula is false with the IP (CONTRADICTION)
-    // @return -> FALSE if the formula is inconclusive with the IP (INCONCLUSIVE != SATISFIABLE)
     for(int i = 0; i < cla; i++) 
     {
         bool contradicted = true;
@@ -128,17 +136,19 @@ bool contradicts(int cla, int lit, int formula[cla][lit], int interp[MAX_IP])
     return false;
 }
 
+/**
+ * Function -> Recursive function that builds the binary tree and tests the formula with the current partial interpretation
+ * @param cla -> number of clauses
+ * @param lit -> number of variables (literals)
+ * @param formula -> matrix where the formula is stored
+ * @param header -> tree header
+ * @param curr -> current node where the new node will be added as left or right
+ * @param var_index -> index of the variable in the interpretation partial list
+ * @return -> TRUE if the formula is SATISFIABLE
+ * @return -> FALSE if the formula is UNSATISFIABLE
+ */
 bool sat(int cla, int lit, int formula[cla][lit], tree *header, node *curr, int var_index)
 { 
-    // Function -> Recursive function that builds the binary tree and tests the formula with the current partial interpretation
-    // @param cla -> number of clauses
-    // @param lit -> number of variables (literals)
-    // @param formula -> matrix where the formula is stored
-    // @param header -> tree header
-    // @param curr -> current node where the new node will be added as left or right
-    // @param var_index -> index of the variable in the interpretation partial list
-    // @return -> TRUE if the formula is SATISFIABLE
-    // @return -> FALSE if the formula is UNSATISFIABLE
     if(satisfies(cla, lit, formula, header->interp)) return true;
     if(contradicts(cla, lit, formula, header->interp)) return false;
 
@@ -155,11 +165,13 @@ bool sat(int cla, int lit, int formula[cla][lit], tree *header, node *curr, int 
     return false;
 }
 
+/** 
+ * Function -> Initialize the tree header
+ * @param var_amount -> amount of variables in the formula
+ * @return -> new tree header
+ */
 tree *initialize_tree(int var_amount)
 {
-    // Function -> Initialize the tree header
-    // @param var_amount -> amount of variables in the formula
-    // @return -> new tree header
     tree *new_tree = (tree*) malloc(sizeof(tree));
     new_tree->root = (node*) malloc(sizeof(node));
     new_tree->root->var_index = -1;
