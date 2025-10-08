@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+
 /** Create a new huffman node that unites two nodes
  * @param first first node
  * @param second second node
@@ -12,7 +13,9 @@ huffman_node* create_united_node(huffman_node *first, huffman_node *second) {
   huffman_node* united_node = (huffman_node*)malloc(sizeof(huffman_node));
   united_node->value = NULL;
   united_node->frequency = first->frequency + second->frequency;
-  united_node->left = united_node->right = united_node->next = NULL;
+  united_node->next = first->next = second->next = NULL;
+  united_node->left = first;
+  united_node->right = second;
   return united_node;
 }
 
@@ -44,8 +47,6 @@ huffman_node* create_huffman_tree(huffman_node *head) {
     huffman_node *first = head;
     huffman_node *second = head->next;
     huffman_node *united_node = create_united_node(first, second);
-    united_node->left = first;
-    united_node->right = second;
     head = second->next;
     head = insert_huffman_node(head, united_node);
   }
