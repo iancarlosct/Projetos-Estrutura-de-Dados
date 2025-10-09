@@ -263,7 +263,7 @@ int main()
     }
 
     // Print the formula stored in memory
-    printf("Fórmula na Memória:\n");
+    printf("Formula in Memory:\n");
     for(int i = 0; i < cla; i++) 
     {
         for(int j = 0; j < lit; j++)
