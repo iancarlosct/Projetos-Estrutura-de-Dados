@@ -43,5 +43,6 @@ huffman_node* create_huffman_list(frequency_hash *hash);
 huffman_node* create_huffman_tree(huffman_node *head);
 huffman_node* insert_huffman_node(huffman_node *head, huffman_node *new_node);
 huffman_node* create_united_node(huffman_node *first, huffman_node *second);
+void create_huffman_table(char *table[HASH_SIZE], huffman_node *tree_node, char *code);
 
 #endif

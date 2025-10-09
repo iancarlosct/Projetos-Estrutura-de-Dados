@@ -2,6 +2,27 @@
 #include <string.h>
 #include <stdlib.h>
 
+/**
+ * Create the huffman table recursively
+ * @param table The huffman table to be filled
+ * @param tree_node The current node of the huffman tree
+ * @param code The current code being built (recursively)
+ */
+void create_huffman_table(char *table[HASH_SIZE], huffman_node *tree_node, char *code) {
+  if (tree_node == NULL) return;
+  if (tree_node->left == NULL && tree_node->right == NULL) {
+    table[*(unsigned char*)tree_node->value] = strdup(code);
+    return;
+  }
+  char left_code[strlen(code) + 2]; 
+  char right_code[strlen(code) + 2];
+  strcpy(left_code, code);
+  strcpy(right_code, code);
+  strcat(left_code, "1");
+  strcat(right_code, "0");
+  create_huffman_table(table, tree_node->left, left_code);
+  create_huffman_table(table, tree_node->right, right_code);
+}
 
 /** Create a new huffman node that unites two nodes
  * @param first first node

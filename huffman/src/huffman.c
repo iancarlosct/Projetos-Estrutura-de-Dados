@@ -4,6 +4,15 @@
 #include <stdlib.h>
 
 
+void print_table(char *table[HASH_SIZE]) {
+  printf("Table of huffman codes:\n");
+  for (int i = 0; i < HASH_SIZE; i++) {
+    if (table[i] != NULL) {
+      printf("'%c': %s\n", i, table[i]);
+    }
+  }
+}
+
 void print_freq(huffman_node *head) {
   huffman_node *curr = head;
   while (curr != NULL) {
@@ -36,6 +45,9 @@ int main() {
   destroy_buffer(buffer);
   print_freq(head);
   huffman_node *huffman_tree_root = create_huffman_tree(head);
-  printf("%d\n", huffman_tree_root->frequency); 
+  printf("Sum of all frequencys: %d\n", huffman_tree_root->frequency); 
+  char *table[HASH_SIZE] = {NULL};
+  create_huffman_table(table, huffman_tree_root, "");
+  print_table(table);
   return 0;
 }
