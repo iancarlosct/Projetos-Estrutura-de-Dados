@@ -11,7 +11,11 @@
 file_buffer* init_buffer(int size) {
   file_buffer *buffer = (file_buffer*)malloc(sizeof(file_buffer));
   buffer->size = size;
-  buffer->bytes = malloc(size);
+  if (size != 0) {
+    buffer->bytes = calloc(1, size);
+  } else {
+    buffer->bytes = NULL;
+  }
   return buffer;
 }
 
@@ -22,6 +26,18 @@ file_buffer* init_buffer(int size) {
 void destroy_buffer(file_buffer *buffer) {
   free(buffer->bytes);
   free(buffer);
+}
+
+void add_to_buffer(file_buffer* buffer, void* byte) {
+  if (buffer->bytes == NULL) {
+    buffer->bytes = calloc(1, 1);
+    memcpy(buffer->bytes, byte, 1);
+    buffer->size++;
+    return;
+  }
+  buffer->bytes = realloc(buffer->bytes, buffer->size+1);
+  memcpy((buffer->bytes + buffer->size), byte, 1);
+  buffer->size++;
 }
 
 /**

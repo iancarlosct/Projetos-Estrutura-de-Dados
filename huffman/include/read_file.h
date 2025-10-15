@@ -12,6 +12,7 @@ typedef struct _buffer {
 } file_buffer;
 
 file_buffer* init_buffer(int size);
+void add_to_buffer(file_buffer *buffer, void* byte);
 void destroy_buffer(file_buffer *buffer);
 file_buffer* read_file(char file_path[]);
 void throw_error(char message[]);
