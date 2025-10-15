@@ -11,15 +11,16 @@
 void create_huffman_table(char *table[HASH_SIZE], huffman_node *tree_node, char *code) {
   if (tree_node == NULL) return;
   if (tree_node->left == NULL && tree_node->right == NULL) {
-    table[*(unsigned char*)tree_node->value] = strdup(code);
+    unsigned char idx = *(unsigned char*)tree_node->value;
+    table[idx] = strdup(code);
     return;
   }
   char left_code[strlen(code) + 2]; 
   char right_code[strlen(code) + 2];
   strcpy(left_code, code);
   strcpy(right_code, code);
-  strcat(left_code, "1");
-  strcat(right_code, "0");
+  strcat(right_code, "1");
+  strcat(left_code, "0");
   create_huffman_table(table, tree_node->left, left_code);
   create_huffman_table(table, tree_node->right, right_code);
 }
@@ -152,9 +153,8 @@ void swap_keys(unsigned char *arr, int idx_a, int idx_b) {
 int compare(frequency_hash *hash, unsigned char key_a, unsigned char key_b) {
   int freq_a = hash->frequencies[key_a];
   int freq_b = hash->frequencies[key_b];
-  if (freq_a > freq_b) return 1;
-  if (freq_a < freq_b) return -1;
-  return 0;
+  if (freq_a != freq_b) return freq_a - freq_b;
+  return key_a - key_b;
 }
 
 /**
