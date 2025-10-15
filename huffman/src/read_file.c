@@ -28,6 +28,11 @@ void destroy_buffer(file_buffer *buffer) {
   free(buffer);
 }
 
+/**
+ * Extends the buffer size by 1 and appends the byte to the buffer
+ * @param buffer file buffer to be extended
+ * @param byte new byte to add to the buffer
+ */
 void add_to_buffer(file_buffer* buffer, void* byte) {
   if (buffer->bytes == NULL) {
     buffer->bytes = calloc(1, 1);
