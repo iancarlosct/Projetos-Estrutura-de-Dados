@@ -1,6 +1,7 @@
-#include "include/compress.h"
+#include "../include/compress.h"
 #include <stdlib.h>
 #include <stdio.h>
+#include <string.h>
 
 /**
  * Constructs a buffer with the compressed file bytes, the trash size is
