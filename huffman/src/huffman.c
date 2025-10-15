@@ -1,7 +1,9 @@
 #include "../include/read_file.h"
 #include "../include/create_tree.h"
+#include "../include/compress.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 
 
 void print_table(char *table[HASH_SIZE]) {
@@ -16,7 +18,7 @@ void print_table(char *table[HASH_SIZE]) {
 void print_freq(huffman_node *head) {
   huffman_node *curr = head;
   while (curr != NULL) {
-    printf("(%c,%d)", *(unsigned char*)curr->value, curr->frequency);
+    printf("(%d,%d)", *(unsigned char*)curr->value, curr->frequency);
     if (curr->next == NULL) printf("\n");
     else printf(" -> ");
     curr = curr->next;
@@ -36,18 +38,10 @@ void print_frequency(frequency_hash *hash) {
 }
 
 int main() {
-  char test[] = "../test.txt";
-  file_buffer *buffer = read_file(test);
-  frequency_hash *hash = init_hash();
-  populate_frequency(hash, buffer);
-  huffman_node *head = create_huffman_list(hash);
-  destroy_hash(hash);
-  destroy_buffer(buffer);
-  print_freq(head);
-  huffman_node *huffman_tree_root = create_huffman_tree(head);
-  printf("Sum of all frequencys: %d\n", huffman_tree_root->frequency); 
-  char *table[HASH_SIZE] = {NULL};
-  create_huffman_table(table, huffman_tree_root, "");
-  print_table(table);
+  char test[] = "/home/nicolas/Documents/DANFEs/12-2024.pdf";
+  // char test[] = "/home/nicolas/Pictures/STScI-01GA6KKWG229B16K4Q38CH3BXS.png";
+  // char test[] = "/home/nicolas/projects/estrutura_de_dados/Projetos-Estrutura-de-Dados/huffman/arthur.jpeg";
+  // char test[] = "/home/nicolas/projects/estrutura_de_dados/Projetos-Estrutura-de-Dados/test2.txt";
+  compress(test);
   return 0;
 }
