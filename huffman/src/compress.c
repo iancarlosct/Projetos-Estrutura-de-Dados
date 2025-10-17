@@ -39,7 +39,7 @@ file_buffer* make_body(file_buffer* buffer, char *table[HASH_SIZE], int *trash) 
     (*trash) = BYTE_SIZE - filled;
     add_to_buffer(body, &byte);
   } else {
-    trash = 0;
+    *trash = 0;
   }
 
   return body;
