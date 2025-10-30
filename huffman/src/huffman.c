@@ -1,6 +1,7 @@
 #include "../include/read_file.h"
 #include "../include/create_tree.h"
 #include "../include/compress.h"
+#include "../include/decompress.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -38,10 +39,12 @@ void print_frequency(frequency_hash *hash) {
 }
 
 int main() {
-  char test[] = "/home/nicolas/Documents/DANFEs/12-2024.pdf";
+  char test[] = "/mnt/c/src/Projetos-Estrutura-de-Dados/huffman/file.huff";
+  // char test[] = "/mnt/c/src/Projetos-Estrutura-de-Dados/huffman/teste.txt";
   // char test[] = "/home/nicolas/Pictures/STScI-01GA6KKWG229B16K4Q38CH3BXS.png";
   // char test[] = "/home/nicolas/projects/estrutura_de_dados/Projetos-Estrutura-de-Dados/huffman/arthur.jpeg";
   // char test[] = "/home/nicolas/projects/estrutura_de_dados/Projetos-Estrutura-de-Dados/test2.txt";
-  compress(test);
+  // compress(test);
+  decompress(test);
   return 0;
 }

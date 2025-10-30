@@ -30,7 +30,7 @@ int tree_size(unsigned char *file_ptr){
 * @param byte the byte that will be stored in the node
 * @param is_leaf a boolean that receives true if the node is a leaf and false otherwise
 */
-decomp_node *create_dec_node(void *byte, bool is_leaf) {
+decomp_node *create_decomp_node(void *byte, bool is_leaf) {
   decomp_node *new_node = (decomp_node*)malloc(sizeof(decomp_node));
   if(new_node == NULL) {
     throw_error("Error during decompress node memory allocation");
@@ -53,27 +53,28 @@ decomp_node *create_dec_node(void *byte, bool is_leaf) {
 * @param size the size of the tree
 * @param *i an index that points to the current byte being read
 */
-decomp_node *create_dec_tree(unsigned char *file_ptr, int size, int *i) {
+decomp_node *create_decomp_tree(unsigned char *file_ptr, int size, int *i) {
   if ((*i) >= size) {
     return NULL;
   }
 
-  unsigned char byte = file_ptr[*i]; // takes the actual byte
+  unsigned char byte = file_ptr[*i + HEADER_SIZE]; // takes the actual byte
   (*i)++;                           // increments the index
 
   decomp_node *node;                // new node
   if (byte == '\\') {              // treatment to the escape character
-    byte = file_ptr[(*i)++];      // store the next byte in the node and increment the index
-    node = create_dec_node(&byte, true);
+    byte = file_ptr[*i + HEADER_SIZE];  // store the next byte in the node
+    (*i)++;                            // increments the index
+    node = create_decomp_node(&byte, true);
   } else if (byte != '*') {
-    node = create_dec_node(&byte, true); // leaf
+    node = create_decomp_node(&byte, true); // leaf
   } else {
-    node = create_dec_node(&byte, false); // internal node
+    node = create_decomp_node(&byte, false); // internal node
   }
   
   if(!node->leaf) {                                     // Creates subtrees in pre-order
-    node->left = create_dec_tree(file_ptr, size, i);   // recursively calls the function for the left subtree
-    node->right = create_dec_tree(file_ptr, size, i); // same for the right
+    node->left = create_decomp_tree(file_ptr, size, i);   // recursively calls the function for the left subtree
+    node->right = create_decomp_tree(file_ptr, size, i); // same for the right
   }
 
   return node;
@@ -84,7 +85,7 @@ bool is_bit_i_set(unsigned char byte, int i){
   return mask & byte;
 }
 
-file_buffer *decompress(file_buffer *buffer, decomp_node *root, int trash, int tree_size){
+file_buffer *make_decomp_buffer(file_buffer *buffer, decomp_node *root, int trash, int tree_size){
   file_buffer *dec_file = init_buffer(1);
   decomp_node *curr = root; 
   unsigned char *comp_file = (unsigned char*) buffer->bytes;
@@ -108,7 +109,7 @@ file_buffer *decompress(file_buffer *buffer, decomp_node *root, int trash, int t
 }
 
 void write(file_buffer *file) {
-  FILE *dec_file = fopen("new_file", "wb");
+  FILE *dec_file = fopen("new_file.txt", "wb");
   if(dec_file == NULL){
     throw_error("error during the creation of the new file");
   }
@@ -118,4 +119,19 @@ void write(file_buffer *file) {
   if(count < file->size){
     throw_error("error during the write function");
   }
+}
+
+void decompress(char *path){
+  file_buffer *file_path = read_file(path);
+  unsigned char *bytes = (unsigned char*)file_path->bytes;
+
+  int trash_s = trash_size(bytes);
+  int tree_s = tree_size(bytes);
+
+  int i = 0;
+  decomp_node *root = create_decomp_tree(bytes, tree_s, &i);
+
+  file_buffer *out_buffer = make_decomp_buffer(file_path, root, trash_s, tree_s);
+
+  write(out_buffer);
 }
