@@ -1,7 +1,7 @@
 BUILD_DIR=build
 SRC_DIR=src
 INCLUDE_DIR=include
-OBJECTS=create_tree.o read_file.o compress.o
+OBJECTS=create_tree.o read_file.o compress.o decompress.o
 MAIN_OBJECT=$(BUILD_DIR)/huffman.o
 MAIN_SOURCE=$(SRC_DIR)/huffman.c
 CC=gcc -g
