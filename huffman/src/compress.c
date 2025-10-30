@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>
+#include <libgen.h>
 
 /**
  * Constructs a buffer with the compressed file bytes, the trash size is
@@ -107,8 +108,9 @@ file_buffer* make_header(huffman_node *tree, int tree_size, int trash_size) {
  * @param header compressed file header according with huffman standard
  * @param body compressed information of the original file
  */
-void write_file(file_buffer *header, file_buffer *body) {
-  FILE *fptr = fopen("file.huff", "wb");
+void write_file(file_buffer *header, file_buffer *body, char* filename) {
+  char* new_filename = strcat(filename, ".huff");
+  FILE *fptr = fopen(new_filename, "wb");
   fwrite(header->bytes, 1, header->size, fptr);
   fwrite(body->bytes, 1, body->size, fptr);
   fclose(fptr);
@@ -136,5 +138,6 @@ void compress(char* path) {
   file_buffer *body = make_body(buffer, table, &trash);
   file_buffer *header = make_header(huff_tree, tree_size + escape, trash);
 
-  write_file(header, body);
+  char *filename = basename(path);
+  write_file(header, body, filename);
 }

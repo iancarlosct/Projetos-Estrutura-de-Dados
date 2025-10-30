@@ -10,7 +10,7 @@
 void store_tree(huffman_node *tree, file_buffer *buffer, int *idx);
 file_buffer* make_body(file_buffer *buffer, char *table[HASH_SIZE], int *trash);
 file_buffer* make_header(huffman_node *tree, int tree_size, int trash_size);
-void write_file(file_buffer *header, file_buffer *body);
+void write_file(file_buffer *header, file_buffer *body, char *filename);
 void compress(char *path);
 
 #endif

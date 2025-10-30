@@ -16,5 +16,6 @@ decomp_node *create_decomp_tree(unsigned char *file_buffer, int size, int *i);
 bool is_bit_i_set(unsigned char byte, int i);
 file_buffer *make_decomp_buffer(file_buffer *buffer, decomp_node *root, int trash, int tree_size);
 void decompress(char *path);
+void write(file_buffer *buffer, char *filename);
 
 #endif

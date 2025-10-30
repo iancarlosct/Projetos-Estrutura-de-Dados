@@ -5,46 +5,46 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <linux/limits.h>
 
-
-void print_table(char *table[HASH_SIZE]) {
-  printf("Table of huffman codes:\n");
-  for (int i = 0; i < HASH_SIZE; i++) {
-    if (table[i] != NULL) {
-      printf("'%c': %s\n", i, table[i]);
-    }
-  }
+void print_menu() {
+  printf("\n--------------------------\n");
+  printf("ESCOLHA UMA OPÇÃO:\n[1] - COMPACTAR ARQUIVO\n[2] - DESCOMPACTAR ARQUIVO\n[3] - SAIR");
+  printf("\n--------------------------\n");
 }
 
-void print_freq(huffman_node *head) {
-  huffman_node *curr = head;
-  while (curr != NULL) {
-    printf("(%d,%d)", *(unsigned char*)curr->value, curr->frequency);
-    if (curr->next == NULL) printf("\n");
-    else printf(" -> ");
-    curr = curr->next;
-  }
+void call_compress() {
+  printf("Informe o caminho do arquivo: ");
+  char path[PATH_MAX];
+  scanf("%s", path);
+  compress(path);
+  printf("Arquivo comprimido com sucesso!\n");
 }
 
-void print_buffer(file_buffer *buffer) {
-  for (int i = 0; i < buffer->size; i++) {
-    printf("%c", ((unsigned char*)buffer->bytes)[i]);
-  }
-}
-
-void print_frequency(frequency_hash *hash) {
-  for (int i = 0; i < hash->size; i++) {
-    printf("%c %d\n", hash->keys[i], hash->frequencies[hash->keys[i]]);
-  }
+void call_decompress() {
+  printf("Informe o caminho do arquivo: ");
+  char path[PATH_MAX];
+  scanf("%s", path);
+  decompress(path);
+  printf("Arquivo descompactado com sucesso!\n");
 }
 
 int main() {
-  char test[] = "/mnt/c/src/Projetos-Estrutura-de-Dados/huffman/file.huff";
-  // char test[] = "/mnt/c/src/Projetos-Estrutura-de-Dados/huffman/teste.txt";
-  // char test[] = "/home/nicolas/Pictures/STScI-01GA6KKWG229B16K4Q38CH3BXS.png";
-  // char test[] = "/home/nicolas/projects/estrutura_de_dados/Projetos-Estrutura-de-Dados/huffman/arthur.jpeg";
-  // char test[] = "/home/nicolas/projects/estrutura_de_dados/Projetos-Estrutura-de-Dados/test2.txt";
-  // compress(test);
-  decompress(test);
-  return 0;
+  while (1) {
+    print_menu();
+    int op;
+    scanf("%d", &op);
+    switch (op) {
+      case 1:
+        call_compress();
+        continue;
+      case 2:
+        call_decompress();
+        continue;
+      case 3:
+        exit(0);
+      default:
+        printf("Opção inválida\n");
+    }
+  }
 }

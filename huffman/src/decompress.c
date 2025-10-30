@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <libgen.h>
 
 #define HEADER_SIZE 2
 #define BYTE_SIZE 8
@@ -86,7 +87,7 @@ bool is_bit_i_set(unsigned char byte, int i){
 }
 
 file_buffer *make_decomp_buffer(file_buffer *buffer, decomp_node *root, int trash, int tree_size){
-  file_buffer *dec_file = init_buffer(1);
+  file_buffer *dec_file = init_buffer(0);
   decomp_node *curr = root; 
   unsigned char *comp_file = (unsigned char*) buffer->bytes;
   
@@ -108,8 +109,8 @@ file_buffer *make_decomp_buffer(file_buffer *buffer, decomp_node *root, int tras
   return dec_file;
 }
 
-void write(file_buffer *file) {
-  FILE *dec_file = fopen("new_file.txt", "wb");
+void write(file_buffer *file, char *filename) {
+  FILE *dec_file = fopen(filename, "wb");
   if(dec_file == NULL){
     throw_error("error during the creation of the new file");
   }
@@ -133,5 +134,9 @@ void decompress(char *path){
 
   file_buffer *out_buffer = make_decomp_buffer(file_path, root, trash_s, tree_s);
 
-  write(out_buffer);
+  char* basefile = basename(path);
+  char out_filename[strlen(basefile) - 4];
+  strncpy(out_filename, basefile, strlen(basefile) - 5);
+  out_filename[strlen(basefile) - 5] = '\0';
+  write(out_buffer, out_filename);
 }
