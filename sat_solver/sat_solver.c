@@ -53,16 +53,8 @@ node *add_node(tree *header, node *curr, int var_index, bool value)
     if(value) header->interp[var_index] = 1;
     else header->interp[var_index] = -1;
 
-    if(curr == NULL)
-    {
-        if(header->root->left == NULL) header->root->left = new_node;           
-        else header->root->right = new_node;
-    } 
-    else
-    {
-        if(value) curr->left = new_node;
-        else curr->right = new_node;
-    }
+    if(value) curr->left = new_node;
+    else curr->right = new_node;
 
     return new_node;
 }
