@@ -228,7 +228,6 @@ void read_input(int *lit, int *cla)
     return;
 }
 
-
 /**
  * Function -> Read the formula and store it in a matrix
  * @param cla -> number of clauses
@@ -326,8 +325,6 @@ void print_result(bool res, tree *header)
 
     return;
 }
-
-
 
 int main()
 {  
