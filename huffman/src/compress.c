@@ -25,8 +25,8 @@ file_buffer* make_body(file_buffer* buffer, char *table[HASH_SIZE], int *trash) 
     new_code = table[idx];
     // add bytes according to path
     code_len = strlen(new_code);
-    for (int c = 0; c < code_len; c++) {
-      byte |= ((new_code[c] == '1') << (BYTE_SIZE - filled - 1));
+    for (int c = 0; c < code_len; c++) {                         
+      byte |= ((new_code[c] == '1') << (BYTE_SIZE - filled - 1)); 
       filled++;
       if (filled == BYTE_SIZE) {
         add_to_buffer(body, &byte);
@@ -40,7 +40,7 @@ file_buffer* make_body(file_buffer* buffer, char *table[HASH_SIZE], int *trash) 
     (*trash) = BYTE_SIZE - filled;
     add_to_buffer(body, &byte);
   } else {
-    *trash = 0;
+    (*trash) = 0;
   }
 
   return body;

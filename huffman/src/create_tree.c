@@ -15,7 +15,7 @@ void create_huffman_table(char *table[HASH_SIZE], huffman_node *tree_node, char 
     table[idx] = strdup(code);
     return;
   }
-  char left_code[strlen(code) + 2]; 
+  char left_code[strlen(code) + 2];   // +2 cause we need space for new char and null terminator '\0'
   char right_code[strlen(code) + 2];
   strcpy(left_code, code);
   strcpy(right_code, code);
@@ -47,6 +47,7 @@ huffman_node* create_united_node(huffman_node *first, huffman_node *second) {
  */
 huffman_node* insert_huffman_node(huffman_node *head, huffman_node *new_node) {
   if (head == NULL || new_node->frequency < head->frequency) {
+    new_node->next = head;
     return new_node;
   }
   huffman_node *curr = head;

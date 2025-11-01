@@ -52,10 +52,13 @@ void add_to_buffer(file_buffer* buffer, void* byte) {
  */
 file_buffer* read_file(char *file_path) {
   FILE *fptr;
-  size_t file_size, read_result;
+  size_t file_size;
   fptr = fopen(file_path, "rb"); 
-  if (fptr == NULL) throw_error("File does not exists"); 
-  // get file size
+  if (fptr == NULL) {
+    throw_error("File does not exists"); 
+  }
+
+  // get File Size
   if (fseek(fptr, 0, SEEK_END) != 0) { 
     throw_error("Error during fseek on read_file");
   }
@@ -65,11 +68,12 @@ file_buffer* read_file(char *file_path) {
   }
   rewind(fptr);
   
+  // allocate and fill Buffer
   file_buffer *buffer = init_buffer(file_size);
   if (buffer->bytes == NULL) {
     throw_error("Error while allocating memory for buffer");
   }
-  read_result = fread(buffer->bytes, 1, file_size, fptr);
+  fread(buffer->bytes, 1, file_size, fptr);
   if (ferror(fptr)) {
     throw_error("Error reading file");
   }
@@ -84,7 +88,6 @@ file_buffer* read_file(char *file_path) {
  * @param message text that will be exibited on the screen
  */
 void throw_error(char message[]) {
-  perror(message);
-  printf("%s\n", strerror(errno));
+  printf("%s\n", message);
   exit(EXIT_FAILURE);
 }
