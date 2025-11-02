@@ -13,7 +13,7 @@
  * @returns file_buffer with the compressed file
  */
 file_buffer* make_body(file_buffer* buffer, char *table[HASH_SIZE], int *trash) {
-  unsigned char byte = 0;
+  unsigned char byte = 0, mask;
   int filled = 0;
   char *new_code;
   int code_len;
@@ -25,8 +25,11 @@ file_buffer* make_body(file_buffer* buffer, char *table[HASH_SIZE], int *trash) 
     new_code = table[idx];
     // add bytes according to path
     code_len = strlen(new_code);
-    for (int c = 0; c < code_len; c++) {                         
-      byte |= ((new_code[c] == '1') << (BYTE_SIZE - filled - 1)); 
+    for (int c = 0; c < code_len; c++) {
+      mask = 0b10000000 >> filled;
+      if (new_code[c] == '1') {
+        byte = byte | mask;
+      }
       filled++;
       if (filled == BYTE_SIZE) {
         add_to_buffer(body, &byte);
@@ -56,12 +59,12 @@ void store_tree(huffman_node *tree, file_buffer *buffer, int *idx) {
   if (tree == NULL) return;
   if (tree->left == NULL && tree->right == NULL) {
     if (*(unsigned char*)tree->value == '*' || *(unsigned char*)tree->value == '\\') {
-      memset((buffer->bytes + 2 + *idx), '\\', 1);
+      memset((buffer->bytes + HEADER_SIZE + *idx), '\\', 1);
       (*idx)++;
     }
-    memset((buffer->bytes + 2 + *idx), *(unsigned char*)tree->value, 1);
+    memset((buffer->bytes + HEADER_SIZE + *idx), *(unsigned char*)tree->value, 1);
   } else {
-    memset((buffer->bytes + 2 + *idx), '*', 1);
+    memset((buffer->bytes + HEADER_SIZE + *idx), '*', 1);
   }
   (*idx)++;
   store_tree(tree->left, buffer, idx);
@@ -77,24 +80,18 @@ void store_tree(huffman_node *tree, file_buffer *buffer, int *idx) {
  * @returns file_buffer with the header information
  */
 file_buffer* make_header(huffman_node *tree, int tree_size, int trash_size) {
-  file_buffer *header = init_buffer(2 + tree_size);
-  // trash on the first three bits
-  for (int i = 0; i < TRASH_SIZE; i++) {
-    if (trash_size > 0) {
-      *(unsigned char*)(header->bytes) |= ((trash_size % 2) << i);
-      trash_size /= 2;
-    }
-  }
-  // tree size on the other 13 bits
-  // put value on the next byte
+  file_buffer *header = init_buffer(HEADER_SIZE + tree_size);
+
+  // put value of tree size on the second byte
   for (int i = 0; i < BYTE_SIZE; i++) {
     if (tree_size > 0) {
       *(unsigned char*)(header->bytes + 1) |= ((tree_size % 2) << i);
       tree_size /= 2;
     }
   }
-  // the leftovers put on the trash byte
-  *(unsigned char*)(header->bytes) <<= BYTE_SIZE - TRASH_SIZE;
+
+  // the leftovers of the tree size are put on the first byte together with the trash size
+  *(unsigned char*)(header->bytes) = trash_size << (BYTE_SIZE - TRASH_SIZE);
   *(unsigned char*)(header->bytes) |= tree_size;
   // store tree
   int idx = 0;

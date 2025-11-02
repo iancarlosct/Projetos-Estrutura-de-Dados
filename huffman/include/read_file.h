@@ -1,8 +1,8 @@
 #ifndef _READ_FILE_H
 #define _READ_FILE_H
 
-#define FAIL_EXIT() exit(EXIT_FAILURE)
-
+#define HEADER_SIZE 2
+#define BYTE_SIZE 8
 /**
  * struct to store the file bytes and its size
  */
