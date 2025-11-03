@@ -104,6 +104,14 @@ bool is_bit_i_set(unsigned char byte, int i){
   return mask & byte;
 }
 
+/**
+ * Decompresses the file buffer using the Huffman tree
+ * @param buffer buffer with the compressed file bytes
+ * @param root root of the Huffman tree
+ * @param trash size of the trash bits
+ * @param tree_size size of the Huffman tree
+ * @returns buffer with the decompressed file bytes
+ */
 file_buffer *make_decomp_buffer(file_buffer *buffer, decomp_node *root, int trash, int tree_size){
   file_buffer *dec_file = init_buffer(0);
   decomp_node *curr = root; 
