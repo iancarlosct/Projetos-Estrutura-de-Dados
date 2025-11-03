@@ -181,7 +181,7 @@ tree *initialize_tree(int var_amount)
  * @param message -> error message to be printed
  */
 void throw_error(char message[]) {
-  perror(message);
+  printf("%s", message);
   exit(EXIT_FAILURE);
 }
 
@@ -208,10 +208,10 @@ void read_input(int *lit, int *cla)
         if(cmd == 'p')
         {
             scanf("%s", form);
-            if(strcmp(form, "cnf") != 0) throw_error("Invalid Format, Please Use CNF Format");
+            if(strcmp(form, "cnf") != 0) throw_error("\nInvalid Format, Please Use CNF Format\n");
             scanf("%d %d", lit, cla);
-            if(lit <= 0) throw_error("Literals Number Invalid, Please Use a Valid Amount");
-            if(cla <= 0) throw_error("Clauses Number Invalid, Please Use a Valid Amount");
+            if(*lit <= 0) throw_error("\nLiterals Number Invalid, Please Use a Valid Amount\n");
+            if(*cla <= 0) throw_error("\nClauses Number Invalid, Please Use a Valid Amount\n");
             break;
         }
     }
