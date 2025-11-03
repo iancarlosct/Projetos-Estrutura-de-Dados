@@ -82,17 +82,11 @@ void store_tree(huffman_node *tree, file_buffer *buffer, int *idx) {
 file_buffer* make_header(huffman_node *tree, int tree_size, int trash_size) {
   file_buffer *header = init_buffer(HEADER_SIZE + tree_size);
 
-  // put value of tree size on the second byte
-  for (int i = 0; i < BYTE_SIZE; i++) {
-    if (tree_size > 0) {
-      *(unsigned char*)(header->bytes + 1) |= ((tree_size % 2) << i);
-      tree_size /= 2;
-    }
-  }
+  *(unsigned char*)(header->bytes+1) |= tree_size; // store the tree size on the second byte
+  *(unsigned char*)(header->bytes) |= (tree_size >> BYTE_SIZE); // and the leftovers on the first byte
 
   // the leftovers of the tree size are put on the first byte together with the trash size
-  *(unsigned char*)(header->bytes) = trash_size << (BYTE_SIZE - TRASH_SIZE);
-  *(unsigned char*)(header->bytes) |= tree_size;
+  *(unsigned char*)(header->bytes) |= trash_size << (BYTE_SIZE - TRASH_SIZE);
   // store tree
   int idx = 0;
   store_tree(tree, header, &idx);
