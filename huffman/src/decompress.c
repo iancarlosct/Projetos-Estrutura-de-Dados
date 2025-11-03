@@ -7,29 +7,40 @@
 #define HEADER_SIZE 2
 #define BYTE_SIZE 8
 
+/**
+ * Gets the trash size from the first byte of the file
+ * @param file_ptr pointer to the beginning of the file bytes
+ * @returns trash size
+ */
 int trash_size(unsigned char *file_ptr){
   unsigned char byte1 = file_ptr[0];  //byte with the 3 bits of thrash size
   int trash_s = byte1 >> 5; //do the shift bit to get the trash size
   return trash_s;
 }
 
+/**
+ * Gets the tree size from the first and second byte of the file
+ * @param file_ptr pointer to the beginning of the file bytes
+ * @returns tree size
+ */
 int tree_size(unsigned char *file_ptr){
-  unsigned char byte1 = file_ptr[0];  //get the first byte with 3 bits for trash size and 5 bits for tree size
-  unsigned char byte2 = file_ptr[1]; //get the second byte with 8 bits for tree size
+  unsigned char byte1 = file_ptr[0];  
+  unsigned char byte2 = file_ptr[1]; 
 
-  unsigned char mask = 31; //make a mask with the binary 00011111
-  int size_byte1 = byte1 & mask; //take the five final bits of the byte 1 (bits of tree size)
+  unsigned char mask = 0b00011111; 
+  int size_byte1 = byte1 & mask; 
 
-  int t_size = size_byte1 << 8; //shift the bits to the left, for give space to the bits of byte2
-  t_size = t_size | byte2;     //concatenate the bits of the byte1 and byte2
+  int tree_s = size_byte1 << 8; 
+  tree_s = tree_s | byte2;     
 
-  return t_size;
+  return tree_s;
 }
 
-/*
+/**
 * Creates a node for the decompress tree
 * @param byte the byte that will be stored in the node
 * @param is_leaf a boolean that receives true if the node is a leaf and false otherwise
+* @returns the created node
 */
 decomp_node *create_decomp_node(void *byte, bool is_leaf) {
   decomp_node *new_node = (decomp_node*)malloc(sizeof(decomp_node));
@@ -48,24 +59,25 @@ decomp_node *create_decomp_node(void *byte, bool is_leaf) {
   return new_node;
 }
 
-/*
+/**
 * Creates a tree from a file.huff
 * @param *file_ptr an array with the file's bytes
 * @param size the size of the tree
 * @param *i an index that points to the current byte being read
+* @returns the root of the tree created
 */
 decomp_node *create_decomp_tree(unsigned char *file_ptr, int size, int *i) {
   if ((*i) >= size) {
     return NULL;
   }
 
-  unsigned char byte = file_ptr[*i + HEADER_SIZE]; // takes the actual byte
-  (*i)++;                           // increments the index
+  unsigned char byte = file_ptr[*i + HEADER_SIZE]; 
+  (*i)++;                         
 
-  decomp_node *node;                // new node
-  if (byte == '\\') {              // treatment to the escape character
-    byte = file_ptr[*i + HEADER_SIZE];  // store the next byte in the node
-    (*i)++;                            // increments the index
+  decomp_node *node;              
+  if (byte == '\\') {             
+    byte = file_ptr[*i + HEADER_SIZE]; 
+    (*i)++;                            
     node = create_decomp_node(&byte, true);
   } else if (byte != '*') {
     node = create_decomp_node(&byte, true); // leaf
@@ -74,13 +86,19 @@ decomp_node *create_decomp_tree(unsigned char *file_ptr, int size, int *i) {
   }
   
   if(!node->leaf) {                                     // Creates subtrees in pre-order
-    node->left = create_decomp_tree(file_ptr, size, i);   // recursively calls the function for the left subtree
-    node->right = create_decomp_tree(file_ptr, size, i); // same for the right
+    node->left = create_decomp_tree(file_ptr, size, i);  
+    node->right = create_decomp_tree(file_ptr, size, i); 
   }
 
   return node;
 }
 
+/**
+ * Checks if the i-th bit of a byte is set (1) or not (0)
+ * @param byte the byte to be checked
+ * @param i the index of the bit to be checked (0-7)
+ * @returns true if the i-th bit is set, false otherwise
+ */
 bool is_bit_i_set(unsigned char byte, int i){
   unsigned char mask = 128 >> i;
   return mask & byte;
@@ -92,9 +110,9 @@ file_buffer *make_decomp_buffer(file_buffer *buffer, decomp_node *root, int tras
   unsigned char *comp_file = (unsigned char*) buffer->bytes;
   
   for (int i = HEADER_SIZE + tree_size; i < buffer->size; i++) {
-    int b_size = i == buffer->size - 1 ? BYTE_SIZE - trash : BYTE_SIZE;
+    int byte_size = i == buffer->size - 1 ? BYTE_SIZE - trash : BYTE_SIZE;
 
-    for (int j = 0; j < b_size; j++) {
+    for (int j = 0; j < byte_size; j++) {
       bool bit = is_bit_i_set(comp_file[i], j);
 
       curr = bit ? curr->right : curr->left;
@@ -109,6 +127,11 @@ file_buffer *make_decomp_buffer(file_buffer *buffer, decomp_node *root, int tras
   return dec_file;
 }
 
+/**
+ * Writes the decompressed buffer to a file
+ * @param buffer buffer with the decompressed file bytes
+ * @param filename name of the file to be created
+ */
 void write(file_buffer *file, char *filename) {
   FILE *dec_file = fopen(filename, "wb");
   if(dec_file == NULL){
@@ -122,6 +145,10 @@ void write(file_buffer *file, char *filename) {
   }
 }
 
+/**
+ * Decompresses a .huff file
+ * @param path path to the .huff file
+ */
 void decompress(char *path){
   file_buffer *file_path = read_file(path);
   unsigned char *bytes = (unsigned char*)file_path->bytes;
