@@ -100,7 +100,7 @@ decomp_node *create_decomp_tree(unsigned char *file_ptr, int size, int *i) {
  * @returns true if the i-th bit is set, false otherwise
  */
 bool is_bit_i_set(unsigned char byte, int i){
-  unsigned char mask = 128 >> i;
+  unsigned char mask = 0b10000000 >> i;
   return mask & byte;
 }
 
