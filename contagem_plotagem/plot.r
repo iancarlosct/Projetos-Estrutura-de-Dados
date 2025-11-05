@@ -12,20 +12,4 @@ ggplot(unbalanced, aes(x=quantidade)) +
   geom_point(aes(y=arvore.de.busca.binaria, color="Arvore desbalanceada")) +
   # Adiciona os pontos da coluna arvore avl para o plot
   geom_point(aes(y=arvore.avl, color="Arvore balanceada")) +
-  
-  title
-
-
-library(ggplot2)
-
-random = read.csv("teste_random.csv", header=TRUE)
-
-title = labs(title = "Comparação de Desempenho entre Arvore de busca binária e Arvore AVL",
-             x = "Tamanho da Entrada",
-             y = "Quantidade de Operações",
-             color = "Estrutura")
-
-ggplot(random, aes(x=quantidade)) +
-  geom_point(aes(y=arvore.de.busca.binaria, color="Arvore desbalanceada")) +
-  geom_point(aes(y=arvore.avl, color="Arvore balanceada")) +
   title
