@@ -1,23 +1,29 @@
 library(ggplot2)
 
-balanced = read.csv("teste_balanceado.csv", header=TRUE)
-unbalanced = read.csv("teste_sequencia_crescente.csv", header=TRUE)
-random = read.csv("teste_random.csv", header=TRUE)
+unbalanced = read.csv("/home/nicolas/projects/estrutura_de_dados/Projetos-Estrutura-de-Dados/contagem_plotagem/teste_random.csv", header=TRUE)
 
 title = labs(title = "Comparação de Desempenho entre Arvore de busca binária e Arvore AVL",
              x = "Tamanho da Entrada",
              y = "Quantidade de Operações",
              color = "Estrutura")
 
-ggplot(balanced, aes(x=quantidade)) +
+ggplot(unbalanced, aes(x=quantidade)) +
+  # Adiciona os pontos da coluna arvore de busca binaria para o plot
   geom_point(aes(y=arvore.de.busca.binaria, color="Arvore desbalanceada")) +
-  geom_point(aes(y=arvore.avl, color="Arvore balanceada", alpha=0.5)) +
+  # Adiciona os pontos da coluna arvore avl para o plot
+  geom_point(aes(y=arvore.avl, color="Arvore balanceada")) +
+  
   title
 
-ggplot(unbalanced, aes(x=quantidade)) +
-  geom_point(aes(y=arvore.de.busca.binaria, color="Arvore desbalanceada")) +
-  geom_point(aes(y=arvore.avl, color="Arvore balanceada")) +
-  title
+
+library(ggplot2)
+
+random = read.csv("teste_random.csv", header=TRUE)
+
+title = labs(title = "Comparação de Desempenho entre Arvore de busca binária e Arvore AVL",
+             x = "Tamanho da Entrada",
+             y = "Quantidade de Operações",
+             color = "Estrutura")
 
 ggplot(random, aes(x=quantidade)) +
   geom_point(aes(y=arvore.de.busca.binaria, color="Arvore desbalanceada")) +
