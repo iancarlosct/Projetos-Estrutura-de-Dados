@@ -1,0 +1,14 @@
+*
+!/**/
+!*.*
+.vscode
+*.txt
+a.out
+*.o
+!Makefile
+build
+.tool-versions
+*.huff
+*.jpeg
+*.png
+*.jpg*
