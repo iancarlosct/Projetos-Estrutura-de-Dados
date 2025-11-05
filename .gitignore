@@ -8,3 +8,7 @@ a.out
 !Makefile
 build
 .tool-versions
+*.huff
+*.jpeg
+*.png
+*.jpg*

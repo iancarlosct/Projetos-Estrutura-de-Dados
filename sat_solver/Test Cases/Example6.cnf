@@ -1,0 +1,5 @@
+c Cláusula apenas com tautologias.
+c (X1 || ~X1) && (X2 || ~X2)
+p cnf 2 2
+1 -1 0
+2 -2 0

@@ -1,0 +1,6 @@
+c Caso teste com múltiplas variáveis.
+c (X1 || ~X2 || X3) && (~X1 || X4) && (X2 || ~X3 || ~X4)
+p cnf 4 3
+1 -2 3 0
+-1 4 0
+2 -3 -4 0
