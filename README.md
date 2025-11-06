@@ -23,7 +23,7 @@ Each folder includes a project related to a specific data structure or algorithm
 2. Enter a project folder:
 
    ```bash
-   cd Projetos-Estrutura-de-Dados/(folder)
+   cd Projetos-Estrutura-de-Dados/(foldername)
    ```
 3. Compile and run:
 
@@ -31,9 +31,10 @@ Each folder includes a project related to a specific data structure or algorithm
    gcc (mainfilename).c -o main
    ./main
 
-   for huffman we use makefile to run it:
+   //for huffman we use makefile to run it:
 
-   use "make" inside huffman folder, then use "./build/main" to run it.
+   make
+   ./build/main
    ```
 
 ## 🎯 Purpose
